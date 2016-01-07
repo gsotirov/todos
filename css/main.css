@@ -125,9 +125,9 @@ ul {
 }
 
 .phone-display {
-    width: 299px;
+    width: 300px;
     height: 469px;
-    left: 13px;
+    left: 12px;
     top: 74px;
     background: #fff;
 }
@@ -290,7 +290,7 @@ ul {
     display: inline !important;
 }
 
-.filters-list {
+.filters {
     z-index: 100;
     padding: 10px;
     top: 20px;
@@ -302,12 +302,12 @@ ul {
     box-shadow: 0 0 10px #808080;
 }
 
-.filters-list li {
+.filters li {
     display: block;
     border-bottom: 1px solid #efefef;
 }
 
-.filters-list li a {
+.filters li a {
     background: none !important;
     display: block;
     font-size: 10px;
@@ -323,7 +323,7 @@ ul {
 .clear-completed {
     bottom: 0;
     width: 100%;
-    background: rgba(0, 136, 204, 0.5);
+    background: rgba(0, 0, 0, 0.8);
     padding: 15px;
 }
 

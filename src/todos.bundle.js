@@ -27,16 +27,13 @@ window.app.init();
 },{"./models/me":2,"./views/main":5}],2:[function(require,module,exports){
 'use strict';
 
-var State = require('ampersand-state');
-var Todos = require('./todos');
+var State = require('ampersand-state'),
+		Todos = require('./todos');
 
 module.exports = State.extend({
 	initialize: function () {
-
 		this.listenTo(this.todos, 'change:completed add remove', this.updateTodos);
-		
 		this.updateTodos();
-
 		this.listenTo(this, 'change:mode', this.handleModeChange);
 	},
 	collections: {
@@ -63,39 +60,35 @@ module.exports = State.extend({
 			type: 'string',
 			values: [
 				'all',
-				'completed',
-				'active'
+				'active',
+				'completed'
 			],
 			default: 'all'
 		}
 	},
 	derived: {
 		todosLeft: {
-			deps: ['activeCount'],
+			deps: ['activeCount', 'mode'],
 			fn: function () {
 				var singular = ' item left',
-					plural = ' items left';
-
+						plural = ' items left';
+				
 				return (this.activeCount === 1) ? this.activeCount + singular : this.activeCount + plural;
 			}
 		}
 	},
 	updateTodos: function () {
-
 		var total = this.todos.length;
 		var completed = this.todos.getCompletedCount();
-
 		this.set({
 			totalCount: total,
 			activeCount: total - completed,
 			completedCount: completed,
-			allCompleted: total === completed
+			allCompleted: total === completed,
 		});
-
 	},
 	handleModeChange: function (ev) {
-		console.log(ev);
-		this.todos.setMode(this.mode);
+		this.todos.setFilter(this.mode);
 	}
 });
 
@@ -130,81 +123,62 @@ module.exports = State.extend({
 },{"ampersand-state":42}],4:[function(require,module,exports){
 'use strict';
 
-var Collection = require('ampersand-collection');
-var SubCollection = require('ampersand-subcollection');
-var Todo = require('./todo');
-
-var STORAGE_KEY = 'todos';
-
-var debounce = require('debounce');
-//var Firebase = require('firebase');
+var Collection = require('ampersand-collection'),
+		SubCollection = require('ampersand-subcollection'),
+		Todo = require('./todo'),
+		STORAGE_KEY = 'todos',
+		debounce = require('debounce');
 
 module.exports = Collection.extend({
-
 	// Attach the collection model.
 	model: Todo,
-
 	// Attach some listeners and initial settings.
 	initialize: function () {
-
 		// Attempt to read from the storage to get the current TODOs.
 		this.readFromStorage();
-
+		// Create a subset to easily apply filters...
 		this.subset = new SubCollection(this);
-
 		// Make a little debounce to prevent bugs.
 		this.writeToStorage = debounce(this.writeToStorage, 100);
-
 		// Listen to storage changes.
 		window.addEventListener('storage', this.handleStorageEvent.bind(this));
-
 		// Listen for collection changes and write the changes to the storage.
 		this.on('all', this.writeToStorage, this);
 	},
-
 	// Get the total TODOs count so the main model can display them properly.
 	getCompletedCount: function () {
 		return this.reduce(function (total, todo) {
 			return todo.completed ? ++total : total;
 		}, 0);
 	},
-
 	clearCompleted: function () {
 		var todosToRemove = this.filter(function (todo) {
 			return todo.completed;
 		});
-
 		this.remove(todosToRemove);
 	},
-
-	setMode: function (mode) {
-		console.log(mode);
-		if (mode === 'all') {
+	setFilter: function (filter) {
+		if (filter === 'all') {
 			this.subset.clearFilters();
 		} 
 		else {
 			this.subset.configure({
 				where: {
-					completed: mode === 'completed'
+					completed: filter === 'completed'
 				}
 			}, true);
 		}
 	},
-
 	writeToStorage: function () {
 		localStorage[STORAGE_KEY] = JSON.stringify(this);
 	},
-
 	// Get TODOs from the storage.
 	readFromStorage: function () {
-
 		var records = localStorage[STORAGE_KEY];
-
 		if(records) {
 			this.set(JSON.parse(records));
 		}
 	},
-
 	// Handles events from localStorage. Browsers will fire
 	// this event in other tabs on the same domain.
 	handleStorageEvent: function (e) {
@@ -216,29 +190,28 @@ module.exports = Collection.extend({
 },{"./todo":3,"ampersand-collection":7,"ampersand-subcollection":136,"debounce":492}],5:[function(require,module,exports){
 'use strict';
 
-var View = require('ampersand-view');
-var TodoView = require('./todo');
-
-var ENTER_KEY = 13;
+var View = require('ampersand-view'),
+		TodoView = require('./todo'),
+		ENTER_KEY = 13;
 
 module.exports = View.extend({
 	
 	events: {
 		'keypress [data-hook=add-todo]': 'handleAddTodo',
 		'click [data-hook~=clear]': 'clearCompleted',
-		'click [data-hook~=todos-filter]': 'toggleFilterMenu'
+		'click [data-hook~=todos-filter]': 'toggleFilterMenu',
+		'click [data-hook=f-link]': 'handleFilterChange'
 	},
 
 	initialize: function () {
-
 		this.cacheElements({
 			addTodoInput: '[data-hook~=add-todo]',
-			todosList: '[data-hook~=todos-list]'
+			todosList: '[data-hook~=todos-list]',
+			filtersList: '[data-hook~=filters-list]'
 		});
 
 		this.renderCollection(app.me.todos.subset, TodoView, this.todosList);
 	},
-
 	bindings: {
 		'model.todosLeft': {
 			type: 'innerHTML',
@@ -258,32 +231,22 @@ module.exports = View.extend({
 			}
 		},
 	},
-
 	handleAddTodo: function (e) {
-		
 		var todoTitle = this.addTodoInput.value.trim();
-
 		if(e.which === ENTER_KEY && todoTitle) {
 			app.me.todos.add({title: todoTitle});
 			this.addTodoInput.value = '';
 		}
 	},
-
 	clearCompleted: function () {
 		app.me.todos.clearCompleted();
 	},
-
 	toggleFilterMenu: function (ev) {
-
 		ev.preventDefault();
-		
-		var el = ev.target.parentNode.querySelector('.filters-list');
-
-		this.toggleVisibility(el);
+		this.toggleVisibility(this.filtersList);
 	},
 
 	toggleVisibility: function (target) {
-
 		if (this.elementHasClass(target, 'hidden')) {
 			target.classList.remove('hidden');
 			target.classList.add('visible');
@@ -296,9 +259,15 @@ module.exports = View.extend({
 			return;
 		}
 	},
-
 	elementHasClass: function (el, cls) {
     	return (' ' + el.className + ' ').indexOf(' ' + cls + ' ') >= 0;
+	},
+	handleFilterChange: function (ev) {
+		var target = ev.target,
+				filter = target.dataset['filter'];
+
+		this.toggleVisibility(this.filtersList);
+		this.model.mode = filter;
 	}
 });
 

@@ -1,15 +1,12 @@
 'use strict';
 
-var State = require('ampersand-state');
-var Todos = require('./todos');
+var State = require('ampersand-state'),
+		Todos = require('./todos');
 
 module.exports = State.extend({
 	initialize: function () {
-
 		this.listenTo(this.todos, 'change:completed add remove', this.updateTodos);
-		
 		this.updateTodos();
-
 		this.listenTo(this, 'change:mode', this.handleModeChange);
 	},
 	collections: {
@@ -36,39 +33,35 @@ module.exports = State.extend({
 			type: 'string',
 			values: [
 				'all',
-				'completed',
-				'active'
+				'active',
+				'completed'
 			],
 			default: 'all'
 		}
 	},
 	derived: {
 		todosLeft: {
-			deps: ['activeCount'],
+			deps: ['activeCount', 'mode'],
 			fn: function () {
 				var singular = ' item left',
-					plural = ' items left';
-
+						plural = ' items left';
+				
 				return (this.activeCount === 1) ? this.activeCount + singular : this.activeCount + plural;
 			}
 		}
 	},
 	updateTodos: function () {
-
 		var total = this.todos.length;
 		var completed = this.todos.getCompletedCount();
-
 		this.set({
 			totalCount: total,
 			activeCount: total - completed,
 			completedCount: completed,
-			allCompleted: total === completed
+			allCompleted: total === completed,
 		});
-
 	},
 	handleModeChange: function (ev) {
-		console.log(ev);
-		this.todos.setMode(this.mode);
+		this.todos.setFilter(this.mode);
 	}
 });
 
