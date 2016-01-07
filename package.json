@@ -1,0 +1,25 @@
+{
+  "name": "MobileTodos",
+  "version": "1.0.0",
+  "description": "A simple mobile TODO app made with AmpersandJS",
+  "main": "index.html",
+  "scripts": {
+    "watch": "watchify js/app.js -o src/todos.bundle.js -v"
+  },
+  "keywords": [
+    "todo"
+  ],
+  "author": "Cortez",
+  "license": "ISC",
+  "dependencies": {
+    "ampersand": "^3.0.6",
+    "ampersand-collection": "^1.5.0",
+    "ampersand-model": "^6.0.2",
+    "ampersand-router": "^3.0.2",
+    "ampersand-state": "^4.8.2",
+    "ampersand-subcollection": "^2.0.3",
+    "ampersand-view": "^9.0.0",
+    "debounce": "^1.0.0",
+    "firebase": "^2.3.1"
+  }
+}

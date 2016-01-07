@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" data-framework="ampersand">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Todos Mobile App • Cortez Portfolio</title>
+        <meta name="description" content="Mobile todos app made with AmpersandJS and NodeJS">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Fonts -->
+        <link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+        <!-- Styles -->
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+    </head>
+    <body>
+        <div id="wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="row-inner">
+                        <div class="phone-mockup col-md-6">
+                            <div class="phone-frame relative">
+                                <div class="phone-display absolute">
+                                    <!-- All content goes here -->
+                                    <div class="content relative">
+                                        <div id="app" class="relative">
+                                            <header id="app-header">
+                                                <ul class="app-top-menu clearfix">
+                                                    <li class="pull-left">
+                                                        <span class="todos-left" data-hook="left-count"></span>
+                                                    </li>
+                                                    <li class="pull-right relative">
+                                                        <a href="" class="filter-toggle" data-hook="todos-filter">Filter</a>
+                                                        <ul class="absolute filters-list hidden">
+                                                            <li>
+                                                                <a data-hook="filter-link" class="filter-link" href="#/all">All</a>
+                                                            </li>
+                                                            <li>
+                                                                <a data-hook="filter-link" class="filter-link" href="#/active">Active</a>
+                                                            </li>
+                                                            <li>
+                                                                <a data-hook="filter-link" class="filter-link" href="#/completed">Completed</a>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </header>
+                                            <section id="app-content">
+                                                <input type="text" placeholder="What should be done..." class="add-todo" data-hook="add-todo"/>
+                                                <ul class="todos" data-hook="todos-list"></ul>
+                                            </section>
+                                            <div class="clear-completed absolute" data-hook="clear-completed">
+                                                <button class="clear" data-hook="clear">Clear completed</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="misc col-md-6">
+                            <h1>ToDo List App...</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="src/todos.bundle.js"></script>
+    </body>
+</html>
